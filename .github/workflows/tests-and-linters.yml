@@ -1,6 +1,9 @@
 name: Tests and linters
 
-on: [push, pull_request, workflow_dispatch]
+on:
+  pull_request:
+    branches:
+      - master
 
 jobs:
 
