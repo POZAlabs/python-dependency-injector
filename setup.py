@@ -2,14 +2,11 @@
 
 import os
 import re
-import sys
 
 from setuptools import setup, Extension
 
 
 def _open(filename):
-    if sys.version_info[0] == 2:
-        return open(filename)
     return open(filename, encoding="utf-8")
 
 
