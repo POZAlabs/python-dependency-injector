@@ -2,14 +2,11 @@
 
 import os
 import re
-import sys
 
 from setuptools import setup, Extension
 
 
 def _open(filename):
-    if sys.version_info[0] == 2:
-        return open(filename)
     return open(filename, encoding="utf-8")
 
 
@@ -21,9 +18,6 @@ defined_macros["CYTHON_CLINE_IN_TRACEBACK"] = 0
 with _open("README.rst") as readme_file:
     description = readme_file.read()
 
-# Getting requirements:
-with _open("requirements.txt") as requirements_file:
-    requirements = requirements_file.readlines()
 
 # Getting version:
 with _open("src/dependency_injector/__init__.py") as init_file:
@@ -70,7 +64,6 @@ setup(name="dependency-injector",
                     define_macros=list(defined_macros.items()),
                     extra_compile_args=["-O2"]),
       ],
-      install_requires=requirements,
       extras_require={
           "yaml": [
               "pyyaml",
@@ -104,16 +97,9 @@ setup(name="dependency-injector",
           "License :: OSI Approved :: BSD License",
           "Operating System :: OS Independent",
           "Programming Language :: Python",
-          "Programming Language :: Python :: 2",
-          "Programming Language :: Python :: 2.7",
           "Programming Language :: Python :: 3",
-          "Programming Language :: Python :: 3.5",
-          "Programming Language :: Python :: 3.6",
-          "Programming Language :: Python :: 3.7",
-          "Programming Language :: Python :: 3.8",
-          "Programming Language :: Python :: 3.9",
-          "Programming Language :: Python :: 3.10",
           "Programming Language :: Python :: 3.11",
+          "Programming Language :: Python :: 3.12",
           "Programming Language :: Python :: Implementation :: CPython",
           "Programming Language :: Python :: Implementation :: PyPy",
           "Framework :: AsyncIO",

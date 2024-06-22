@@ -1,4 +1,4 @@
-cython==0.29.32
+cython==0.29.37
 pytest
 pytest-asyncio
 tox
@@ -11,10 +11,11 @@ mypy
 pyyaml
 httpx
 fastapi
-pydantic
+pydantic<2
 numpy
 scipy
 boto3
 mypy_boto3_s3
+typing_extensions
 
 -r requirements-ext.txt
