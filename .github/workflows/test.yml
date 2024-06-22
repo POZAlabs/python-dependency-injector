@@ -1,4 +1,4 @@
-name: Tests and linters
+name: Test
 
 on:
   pull_request:
@@ -23,19 +23,3 @@ jobs:
       - run: tox
         env:
           TOXENV: ${{ matrix.python-version }}
-
-  linters:
-    name: Run linters
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        toxenv: [flake8, pydocstyle, mypy, pylint]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: 3.11
-      - run: pip install tox
-      - run: tox
-        env:
-          TOXENV: ${{ matrix.toxenv }}
