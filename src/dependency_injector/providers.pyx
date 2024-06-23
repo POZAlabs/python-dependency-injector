@@ -1,7 +1,6 @@
 """Providers module."""
 
-from __future__ import absolute_import
-
+import builtins
 import copy
 import errno
 import functools
@@ -12,36 +11,11 @@ import os
 import re
 import sys
 import threading
-import types
 import warnings
-
-try:
-    import contextvars
-except ImportError:
-    contextvars = None
-
-try:
-    import builtins
-except ImportError:
-    # Python 2.7
-    import __builtin__ as builtins
-
-try:
-    import asyncio
-except ImportError:
-    asyncio = None
-    _is_coroutine_marker = None
-else:
-    if sys.version_info >= (3, 5, 3):
-        import asyncio.coroutines
-        _is_coroutine_marker = asyncio.coroutines._is_coroutine
-    else:
-        _is_coroutine_marker = True
-
-try:
-    import ConfigParser as iniconfigparser
-except ImportError:
-    import configparser as iniconfigparser
+import asyncio
+import asyncio.coroutines
+import contextvars
+import configparser as iniconfigparser
 
 try:
     import yaml
@@ -60,24 +34,9 @@ from .errors import (
 
 cimport cython
 
+_is_coroutine_marker = asyncio.coroutines._is_coroutine
+CLASS_TYPES = (type,)
 
-if sys.version_info[0] == 3:  # pragma: no cover
-    CLASS_TYPES = (type,)
-else:  # pragma: no cover
-    CLASS_TYPES = (type, types.ClassType)
-
-    copy._deepcopy_dispatch[types.MethodType] = \
-        lambda obj, memo: type(obj)(obj.im_func,
-                                    copy.deepcopy(obj.im_self, memo),
-                                    obj.im_class)
-
-if sys.version_info[:2] == (3, 5):
-    warnings.warn(
-        "Dependency Injector will drop support of Python 3.5 after Jan 1st of 2022. "
-        "This does not mean that there will be any immediate breaking changes, "
-        "but tests will no longer be executed on Python 3.5, and bugs will not be addressed.",
-        category=DeprecationWarning,
-    )
 
 config_env_marker_pattern = re.compile(
     r"\${(?P<name>[^}^{:]+)(?P<separator>:?)(?P<default>.*?)}",
@@ -102,28 +61,15 @@ def _resolve_config_env_markers(config_content, envs_required=False):
     return config_content
 
 
-if sys.version_info[0] == 3:
-    def _parse_ini_file(filepath, envs_required=False):
-        parser = iniconfigparser.ConfigParser()
-        with open(filepath) as config_file:
-            config_string = _resolve_config_env_markers(
-                config_file.read(),
-                envs_required=envs_required,
-            )
-        parser.read_string(config_string)
-        return parser
-else:
-    import StringIO
-
-    def _parse_ini_file(filepath, envs_required=False):
-        parser = iniconfigparser.ConfigParser()
-        with open(filepath) as config_file:
-            config_string = _resolve_config_env_markers(
-                config_file.read(),
-                envs_required=envs_required,
-            )
-        parser.readfp(StringIO.StringIO(config_string))
-        return parser
+def _parse_ini_file(filepath, envs_required=False):
+    parser = iniconfigparser.ConfigParser()
+    with open(filepath) as config_file:
+        config_string = _resolve_config_env_markers(
+            config_file.read(),
+            envs_required=envs_required,
+        )
+    parser.read_string(config_string)
+    return parser
 
 
 if yaml:
@@ -3967,8 +3913,6 @@ cdef class Resource(Provider):
 
     @staticmethod
     def _is_resource_subclass(instance):
-        if  sys.version_info < (3, 5):
-            return False
         if not isinstance(instance, CLASS_TYPES):
             return
         from . import resources
@@ -3976,8 +3920,6 @@ cdef class Resource(Provider):
 
     @staticmethod
     def _is_async_resource_subclass(instance):
-        if  sys.version_info < (3, 5):
-            return False
         if not isinstance(instance, CLASS_TYPES):
             return
         from . import resources
