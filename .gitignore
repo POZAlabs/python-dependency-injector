@@ -75,3 +75,4 @@ src/dependency_injector/providers/*.so
 .workspace/
 .venv
 .DS_Store
+tmp*
