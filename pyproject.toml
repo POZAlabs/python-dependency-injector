@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "pozalabs-dependeny-injector"
+packages = [{ include = "pozalabs_dependency_injector", from = "src"}]
+version = "0.1.0"
+description = ""
+authors = ["pozalabs <contact@pozalabs.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.11,<4.0"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.7.1"
+pytest = "^8.2.2"
+pytest-asyncio = "^0.23.7"
+pydantic = "1.10.*"
+mypy-boto3-s3 = "^1.34.120"
+cython = "0.29.37"
+flask = "<2.2.0"
+werkzeug = "<=2.2.2"
+aiohttp = "3.9.0b1"
+pyyaml = "^6.0.1"
+fastapi = "^0.111.0"
+numpy = "^2.0.0"
+scipy = "^1.13.1"
+boto3 = "^1.34.131"
+typing-extensions = "^4.12.2"
+tox = "^4.15.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "W"]
