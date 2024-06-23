@@ -2,7 +2,7 @@ VERSION := $(shell python setup.py --version)
 
 CYTHON_SRC := $(shell find src/dependency_injector -name '*.pyx')
 
-CYTHON_DIRECTIVES = -Xlanguage_level=2
+CYTHON_DIRECTIVES = -Xlanguage_level=3
 
 ifdef DEPENDENCY_INJECTOR_DEBUG_MODE
 	CYTHON_DIRECTIVES += -Xprofile=True
@@ -26,15 +26,10 @@ clean:
 	find examples -name '__pycache__' -delete
 
 cythonize:
-	# Compile Cython to C
-	cython -a $(CYTHON_DIRECTIVES) $(CYTHON_SRC)
-	# Move all Cython html reports
-	mkdir -p reports/cython/
-	find src -name '*.html' -exec mv {}  reports/cython/  \;
+	cython $(CYTHON_DIRECTIVES) $(CYTHON_SRC)
 
 build: clean cythonize
-	# Compile C extensions
-	python setup.py build_ext --inplace
+	poetry build
 
 docs-live:
 	sphinx-autobuild docs docs/_build/html
@@ -51,27 +46,3 @@ test:
 	coverage run --rcfile=./.coveragerc -m pytest -c tests/.configs/pytest.ini
 	coverage report --rcfile=./.coveragerc
 	coverage html --rcfile=./.coveragerc
-
-check:
-	flake8 src/dependency_injector/
-	flake8 examples/
-
-	pydocstyle src/dependency_injector/
-	pydocstyle examples/
-
-	mypy tests/typing
-
-test-publish: cythonize
-	# Create distributions
-	python setup.py sdist
-	# Upload distributions to PyPI
-	twine upload --repository testpypi dist/dependency-injector-$(VERSION)*
-
-publish:
-	# Merge release to master branch
-	git checkout master
-	git merge --no-ff release/$(VERSION) -m "Merge branch 'release/$(VERSION)' into master"
-	git push origin master
-	# Create and upload tag
-	git tag -a $(VERSION) -m 'version $(VERSION)'
-	git push --tags
