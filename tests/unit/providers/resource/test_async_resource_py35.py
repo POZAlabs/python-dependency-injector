@@ -2,7 +2,6 @@
 
 import asyncio
 import inspect
-import sys
 from typing import Any
 
 from dependency_injector import containers, providers, resources
@@ -34,7 +33,6 @@ async def test_init_async_function():
 
 
 @mark.asyncio
-@mark.skipif(sys.version_info < (3, 6), reason="requires Python 3.6+")
 async def test_init_async_generator():
     resource = object()
 
@@ -112,8 +110,7 @@ async def test_init_async_class():
 
 def test_init_async_class_generic_typing():
     # See issue: https://github.com/ets-labs/python-dependency-injector/issues/488
-    class TestDependency:
-        ...
+    class TestDependency: ...
 
     class TestAsyncResource(resources.AsyncResource[TestDependency]):
         async def init(self, *args: Any, **kwargs: Any) -> TestDependency:
@@ -125,8 +122,7 @@ def test_init_async_class_generic_typing():
 
 
 def test_init_async_class_abc_init_definition_is_required():
-    class TestAsyncResource(resources.AsyncResource):
-        ...
+    class TestAsyncResource(resources.AsyncResource): ...
 
     with raises(TypeError) as context:
         TestAsyncResource()
@@ -137,8 +133,7 @@ def test_init_async_class_abc_init_definition_is_required():
 
 def test_init_async_class_abc_shutdown_definition_is_not_required():
     class TestAsyncResource(resources.AsyncResource):
-        async def init(self):
-            ...
+        async def init(self): ...
 
     assert hasattr(TestAsyncResource(), "shutdown") is True
     assert inspect.iscoroutinefunction(TestAsyncResource.shutdown) is True
@@ -222,10 +217,7 @@ async def test_init_with_dependency_to_other_resource():
             db_url=config.db_url,
         )
 
-        user_session = providers.Resource(
-            init_user_session,
-            db=db_connection
-        )
+        user_session = providers.Resource(init_user_session, db=db_connection)
 
     async def main():
         container = Container(config={"db_url": "postgres://..."})
@@ -296,10 +288,7 @@ async def test_concurrent_init():
 
     provider = providers.Resource(_init)
 
-    result1, result2 = await asyncio.gather(
-        provider(),
-        provider()
-    )
+    result1, result2 = await asyncio.gather(provider(), provider())
 
     assert result1 is resource
     assert _init.counter == 1

@@ -1,12 +1,12 @@
 """Singleton provider tests."""
+
 import decimal
 import sys
 
-from dependency_injector import providers, errors
-from pytest import fixture, raises, mark
+from dependency_injector import errors, providers
+from pytest import fixture, mark, raises
 
 from .common import Example
-
 
 PROVIDER_CLASSES = [
     providers.Singleton,
@@ -15,9 +15,8 @@ PROVIDER_CLASSES = [
     providers.DelegatedThreadLocalSingleton,
     providers.ThreadSafeSingleton,
     providers.DelegatedThreadSafeSingleton,
+    providers.ContextLocalSingleton,
 ]
-if sys.version_info >= (3, 5):
-    PROVIDER_CLASSES.append(providers.ContextLocalSingleton)
 
 
 @fixture(params=PROVIDER_CLASSES)
@@ -203,10 +202,12 @@ def test_call_with_context_args_and_kwargs(singleton_cls):
 
 
 def test_fluent_interface(singleton_cls):
-    provider = singleton_cls(Example) \
-        .add_args(1, 2) \
-        .add_kwargs(init_arg3=3, init_arg4=4) \
+    provider = (
+        singleton_cls(Example)
+        .add_args(1, 2)
+        .add_kwargs(init_arg3=3, init_arg4=4)
         .add_attributes(attribute1=5, attribute2=6)
+    )
 
     instance = provider()
 
@@ -219,44 +220,40 @@ def test_fluent_interface(singleton_cls):
 
 
 def test_set_args(singleton_cls):
-    provider = singleton_cls(Example) \
-        .add_args(1, 2) \
-        .set_args(3, 4)
+    provider = singleton_cls(Example).add_args(1, 2).set_args(3, 4)
     assert provider.args == (3, 4)
 
 
 def test_set_kwargs(singleton_cls):
-    provider = singleton_cls(Example) \
-        .add_kwargs(init_arg3=3, init_arg4=4) \
+    provider = (
+        singleton_cls(Example)
+        .add_kwargs(init_arg3=3, init_arg4=4)
         .set_kwargs(init_arg3=4, init_arg4=5)
+    )
     assert provider.kwargs == dict(init_arg3=4, init_arg4=5)
 
 
 def test_set_attributes(singleton_cls):
-    provider = singleton_cls(Example) \
-        .add_attributes(attribute1=5, attribute2=6) \
+    provider = (
+        singleton_cls(Example)
+        .add_attributes(attribute1=5, attribute2=6)
         .set_attributes(attribute1=6, attribute2=7)
+    )
     assert provider.attributes == dict(attribute1=6, attribute2=7)
 
 
 def test_clear_args(singleton_cls):
-    provider = singleton_cls(Example) \
-        .add_args(1, 2) \
-        .clear_args()
+    provider = singleton_cls(Example).add_args(1, 2).clear_args()
     assert provider.args == tuple()
 
 
 def test_clear_kwargs(singleton_cls):
-    provider = singleton_cls(Example) \
-        .add_kwargs(init_arg3=3, init_arg4=4) \
-        .clear_kwargs()
+    provider = singleton_cls(Example).add_kwargs(init_arg3=3, init_arg4=4).clear_kwargs()
     assert provider.kwargs == dict()
 
 
 def test_clear_attributes(singleton_cls):
-    provider = singleton_cls(Example) \
-        .add_attributes(attribute1=5, attribute2=6) \
-        .clear_attributes()
+    provider = singleton_cls(Example).add_attributes(attribute1=5, attribute2=6).clear_attributes()
     assert provider.attributes == dict()
 
 
@@ -479,6 +476,7 @@ def test_full_reset_context_manager_as_attribute(provider):
 
 def test_repr(provider):
     assert repr(provider) == (
-        "<dependency_injector.providers."
-        "{0}({1}) at {2}>".format(provider.__class__.__name__, repr(Example), hex(id(provider)))
+        "<dependency_injector.providers." "{0}({1}) at {2}>".format(
+            provider.__class__.__name__, repr(Example), hex(id(provider))
+        )
     )
