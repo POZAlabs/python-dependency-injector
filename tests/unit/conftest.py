@@ -1,8 +1,5 @@
-"""Fixtures module."""
-
 import sys
-import os.path
-
+from pathlib import Path
 
 # Add current package to import samples/ dir
-sys.path.append(os.path.dirname(__file__))
+sys.path.append(str(Path(__file__).parent))
