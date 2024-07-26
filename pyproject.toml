@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pozalabs-dependency-injector"
 packages = [{ include = "dependency_injector", from = "src"}]
-version = "4.42.0"
+version = "4.43.0"
 description = ""
 authors = ["pozalabs <contact@pozalabs.com>"]
 readme = "README.rst"
