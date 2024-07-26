@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "pozalabs-dependeny-injector"
+name = "pozalabs-dependency-injector"
 packages = [{ include = "dependency_injector", from = "src"}]
 version = "4.42.0"
 description = ""
